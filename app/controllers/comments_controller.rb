@@ -1,6 +1,14 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: %i[ show edit update destroy ]
 
+  before_action :ensure_current_user_is_author, only: [:edit, :update, :destroy]
+  
+  def ensure_current_user_is_author
+    if current_user != @comment.author
+      redirect_back(fallback_location: root_url, notice: "nah")
+    end
+  end
+
   # GET /comments or /comments.json
   def index
     @comments = Comment.all
